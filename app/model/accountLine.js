@@ -7,8 +7,8 @@ const accountLineSchema = new mongoose.Schema({
     date: {type: Date},
     method: {type: String},
     isPassed: {type: Boolean},
-    category: {type: String},
-    account: {type: String},
+    category: {type: mongoose.Schema.Types.ObjectId, ref: "Category"},
+    account: {type: mongoose.Schema.Types.ObjectId, ref: "Account"},
     lastUpdated: {type: Date}
 });
 
