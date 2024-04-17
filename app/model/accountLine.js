@@ -24,7 +24,8 @@ const accountLineSchema = new mongoose.Schema({
     },
     method: {
         type: String,
-        required: [true, 'Entrez la méthode de paiement']
+        required: [true, 'Entrez la méthode de paiement'],
+        enum: ['CASH', 'CB', 'VIREMENT', 'CHEQUE']
     },
     isPassed: {
         type: Boolean,
