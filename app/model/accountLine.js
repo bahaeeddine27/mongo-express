@@ -1,49 +1,62 @@
 const mongoose = require("mongoose");
 
 const accountLineSchema = new mongoose.Schema({
-    label: {
-        type: String,
-        required: [true, 'Entrez votre libellé']
+  label: {
+    type: String,
+    required: [true, "Label is required."],
+    maxlength: [50, "Label must be at most 50 characters long."],
+    minlength: [2, "Label must be at least 2 characters long."],
+    trim: true,
+  },
+  type: {
+    type: String,
+    required: [true, "Type is required"],
+    enum: {
+      values: ["credit", "debit"],
+      message: "{VALUE} is not a valid option. Type must be credit or debit.",
     },
-    type: {
-        type: String,
-        required: [true, 'Entrez le type de transaction'],
-        enum: {
-            values: ['credit', 'debit'],
-            message: '"credit" ou "debit"'
-        }
+  },
+  amount: {
+    type: Number,
+    required: [true, "Amount is required."],
+    validate: {
+      validator: function (amount) {
+        return amount > 0;
+      },
+      message: "Amount can't be 0.",
     },
-    amount: {
-        type: Number,
-        required: [true, 'Entrez le montant'],
-        min: 0
+  },
+  date: {
+    type: Date,
+    required: [true, "Date is required."],
+  },
+  method: {
+    type: String,
+    required: [true, "Method is required."],
+    enum: {
+      values: ["Cash", "Direct Deposit", "Credit Card", "Bank Transfer"],
+      message:
+        '{VALUE} is not a valid option. Value must be "Cash", "Direct Deposit", "Credit Card" or "Bank Transfer".',
     },
-    date: {
-        type: Date,
-        required: [true, 'Entrez la date']
-    },
-    method: {
-        type: String,
-        required: [true, 'Entrez la méthode de paiement'],
-        enum: ['CASH', 'CB', 'VIREMENT', 'CHEQUE']
-    },
-    isPassed: {
-        type: Boolean,
-        default: false
-    },
-    category: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Category"
-    },
-    account: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Account",
-        required: [true, 'Entre le compte']
-    },
-    lastUpdated: {
-        type: Date,
-        default: Date.now
-    }
+  },
+  isPassed: {
+    type: Boolean,
+    default: false,
+  },
+  categoryId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Category",
+    required: [true, "CategoryId is required."],
+  },
+  accountId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Account",
+    required: [true, "AccountId is required."],
+  },
+  lastUpdated: {
+    type: Date,
+    required: [true, "Last Updated is required."],
+  },
 });
 
 const AccountLine = mongoose.model("AccountLine", accountLineSchema);

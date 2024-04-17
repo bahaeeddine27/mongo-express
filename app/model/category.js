@@ -1,29 +1,20 @@
 const mongoose = require("mongoose");
-const validate = require('mongoose-validator');
-
-const nameValidator = [
-    validate({
-        validator: 'isLength',
-        arguments: [3, 50],
-        message: 'Le nom de la catégorie doit contenir entre {ARGS[0]} et {ARGS[1]} caractères',
-    }),
-    validate({
-        validator: 'isAlphanumeric',
-        passIfEmpty: true,
-        message: 'Le nom de la catégorie doit contenir uniquement des caractères alphanumériques',
-    }),
-];
+const uniqueValidator = require("mongoose-unique-validator");
 
 const categorySchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: [true, 'Entrez le nom de la catégorie'],
-        unique: [true, 'Cette catégorie existe déjà'],
-        trim: true,
-        validate: nameValidator,
-    }
+  name: {
+    type: string,
+    required: [true, "Category name is required."],
+    minlength: [5, "Category Name must be at least 5 characters long."],
+    trim: true,
+    unique: true,
+  },
 });
 
-const Category = mongoose.model('Category', categorySchema);
+const Category = mongoose.model("Category", categorySchema);
+
+userSchema.plugin(uniqueValidator, {
+  message: "Category is already in use.",
+});
 
 module.exports = Category;

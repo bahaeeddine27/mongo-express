@@ -1,47 +1,40 @@
 const mongoose = require("mongoose");
-const validate = require('mongoose-validator');
-
-const emailValidator = [
-    validate({
-        validator: 'isLength',
-        arguments: [3, 50],
-        message: 'L\'email doit contenir entre {ARGS[0]} et {ARGS[1]} caractères',
-    }),
-    validate({
-        validator: 'isAlphanumeric',
-        passIfEmpty: true,
-        message: 'L\'email doit contenir uniquement des caractères alphanumériques',
-    }),
-    validate({
-        validator: 'isEmail',
-        message: 'L\'adresse email n\'est pas valide',
-    }),
-];
-
-const passwordValidator = [
-    validate({
-        validator: 'matches',
-        arguments: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
-        message: 'Le mot de passe doit contenir au moins 8 caractères, dont au moins une lettre majuscule, une lettre minuscule et un chiffre',
-    }),
-];
+const uniqueValidator = require("mongoose-unique-validator");
 
 const userSchema = new mongoose.Schema({
-    email: {
-        type: String,
-        required: [true, 'Entrez votre email'],
-        unique: [true, 'Cet email est déjà utilisé'],
-        lowercase: true,
-        trim: true,
-        validate: emailValidator,
+  email: {
+    type: String,
+    unique: true,
+    required: [true, "E-mail address is required."],
+    trim: true,
+    lowercase: true,
+    validate: {
+      validator: function (email) {
+        const emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+        return emailRegex.test(email);
+      },
+      message: "Please filled a valid e-mail address.",
     },
-    password: {
-        type: String,
-        required: [true, 'Entrez votre mot de passe'],
-        validate: passwordValidator,
+  },
+  password: {
+    type: String,
+    required: [true, "Password is required"],
+    validate: {
+      validator: function (password) {
+        const passwordRegex =
+          /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
+        return passwordRegex.test(password);
+      },
+      message:
+        "The password must contain at least 8 characters, including at least 1 number and 1 special character.",
     },
+  },
 });
 
-const User = mongoose.model('User', userSchema);
+userSchema.plugin(uniqueValidator, {
+  message: "E-mail address is already in use.",
+});
+
+const User = mongoose.model("User", userSchema);
 
 module.exports = User;
